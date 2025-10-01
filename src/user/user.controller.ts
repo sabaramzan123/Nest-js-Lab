@@ -1,6 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.interface';
+import { CreateUserDto } from './dto/createUserDto';
+import { plainToInstance } from 'class-transformer';
+import { UserResponseDto } from './dto/UserResponseDto';
 
 @Controller('user')
 export class UserController {
@@ -18,8 +21,11 @@ export class UserController {
 
     //POST - Create a New User
     @Post()
-    createUser(@Body() newUser: { name: string; email: string }) {
-        return this.userService.createUser(newUser);
+    createUser(@Body() createUserDto: CreateUserDto) {
+        const user =  this.userService.createUser(createUserDto);
+        return plainToInstance(UserResponseDto, user, {
+            excludeExtraneousValues: false,
+        } )
     }
 
     //PUT - Replace a user
