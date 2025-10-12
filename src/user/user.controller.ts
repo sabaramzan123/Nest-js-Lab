@@ -1,12 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.interface';
 import { CreateUserDto } from './dto/createUserDto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dto/UserResponseDto';
-
+import { CustomException } from 'src/exception/customException';
 @Controller('user')
 export class UserController {
+    appService: any;
     constructor(private userService: UserService){}
 
     @Get()
@@ -16,8 +17,20 @@ export class UserController {
     
     @Get(':id')
     getUser(@Param('id') id: string) {
+        if(id <= '0'){
+            throw new NotFoundException("This ID is invalid please enter ID greater then 0");
+        }
         return this.userService.getUser(Number(id));
     }
+
+    @Get()
+    getHello(): string {
+      var str = this.appService.getHello();
+      if (str != "") {
+         throw new CustomException();
+ }
+      return str;
+ }
 
     //POST - Create a New User
     @Post()
