@@ -1,25 +1,30 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Put, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.interface';
 import { CreateUserDto } from './dto/createUserDto';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dto/UserResponseDto';
 import { CustomException } from 'src/exception/customException';
+import { AuthGuard } from 'src/Guards/AuthGuards';
+import { LoggingInterceptor } from 'src/Interceptor/loggingInterceptor';
 @Controller('user')
+@UseInterceptors(LoggingInterceptor)
+@UsePipes(ParseIntPipe)
 export class UserController {
     appService: any;
     constructor(private userService: UserService){}
 
+    @UseGuards(AuthGuard)
     @Get()
     getUsers(){
         return this.userService.getUsers();
     }
     
     @Get(':id')
-    getUser(@Param('id') id: string) {
-        if(id <= '0'){
-            throw new NotFoundException("This ID is invalid please enter ID greater then 0");
-        }
+    getUser(@Param('id') id: ParseIntPipe) {
+        // if(id <= '0'){
+        //     throw new NotFoundException("This ID is invalid please enter ID greater then 0");
+        // }
         return this.userService.getUser(Number(id));
     }
 
