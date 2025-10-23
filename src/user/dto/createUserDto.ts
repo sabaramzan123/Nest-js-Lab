@@ -1,9 +1,8 @@
-import {IsString, IsInt, IsEmail, Min, Max, ValidateNested} from "class-validator";
+import {IsString, IsInt, IsEmail, Min, Max, ValidateNested, IsOptional} from "class-validator";
 import { userAddressDto } from "./NestedUserDto";
 import { Exclude, Expose, Type } from "class-transformer";
 
 export class CreateUserDto{
-    @Exclude()
     @IsString()
     name: string;
 
@@ -18,4 +17,8 @@ export class CreateUserDto{
     @ValidateNested()
     @Type(() => userAddressDto)
     address: userAddressDto;
+
+  @IsOptional()
+  @IsString()
+  role?: string; 
 }

@@ -7,9 +7,9 @@ import { UserResponseDto } from './dto/UserResponseDto';
 import { CustomException } from 'src/exception/customException';
 import { AuthGuard } from 'src/Guards/AuthGuards';
 import { LoggingInterceptor } from 'src/Interceptor/loggingInterceptor';
+import { ValidateUserRolePipe } from 'src/Pipe/ValidateUserRolePipe';
 @Controller('user')
 @UseInterceptors(LoggingInterceptor)
-@UsePipes(ParseIntPipe)
 export class UserController {
     appService: any;
     constructor(private userService: UserService){}
@@ -38,13 +38,25 @@ export class UserController {
  }
 
     //POST - Create a New User
+    // @Post()
+    // createUser(@Body() createUserDto: CreateUserDto) {
+    //     const user =  this.userService.createUser(createUserDto);
+    //     return plainToInstance(UserResponseDto, user, {
+    //         excludeExtraneousValues: false,
+    //     } )
+    // }
+
     @Post()
-    createUser(@Body() createUserDto: CreateUserDto) {
-        const user =  this.userService.createUser(createUserDto);
-        return plainToInstance(UserResponseDto, user, {
-            excludeExtraneousValues: false,
-        } )
-    }
+    createUserWithRole(
+    @Body('role', ValidateUserRolePipe) role: string,
+    @Body() createUserDto: CreateUserDto
+) {
+    return {
+    message: `User created with role: ${role}`,
+    user: createUserDto
+  };
+}
+
 
     //PUT - Replace a user
     @Put(':id')
